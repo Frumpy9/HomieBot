@@ -1,11 +1,9 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
+const {SlashCommandBuilder, MessageActionRow, ButtonBuilder, MessageEmbed } = require('discord.js');
 
-const { MessageActionRow, MessageButton, MessageEmbed } = require('discord.js');
-
-let flipButton = new MessageButton()
+let flipButton = new ButtonBuilder()
     .setCustomId("flip")
     .setLabel("Flip")
-    .setStyle("PRIMARY")
+    .setStyle("Primary")
 
 let coin = ["Heads", "Tails"]
 
