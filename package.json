@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/Frumpy9/HomieBot#readme",
   "dependencies": {
-    "discord.js": "^14.6.0"
+    "discord.js": "^14.6.0",
+    "spotify-web-api-node": "^5.0.2"
   }
 }

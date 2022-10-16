@@ -1,3 +1,5 @@
+var SpotifyWebApi = require('spotify-web-api-node');
+
 module.exports = {
 	name: 'ready',
 	once: true,
