@@ -1,7 +1,7 @@
 import { Command } from "../../structs/Command";
 import { spotify } from "../..";
 import { getAverageColor } from "fast-average-color-node";
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ColorResolvable, EmbedBuilder, ForumChannel, GuildMember, ThreadAutoArchiveDuration } from "discord.js";
+import { ActionRowBuilder, APIActionRowComponent, ButtonBuilder, ButtonComponent, ButtonStyle, ColorResolvable, ComponentType, EmbedBuilder, ForumChannel, GuildMember, RESTOAuth2AdvancedBotAuthorizationQueryResult, ThreadAutoArchiveDuration } from "discord.js";
 
 export default new Command()
     .setName("rec-song")
@@ -17,48 +17,38 @@ export default new Command()
         if (!songID) return;
 
         let songData = await spotify.getTrack(songID).then(
-            (data) => {
-                return data.body;
-            },
-            async (err) => {
-                await interaction.reply({ content: "Couldn't find song!", ephemeral: true });
-                console.error(err);
-                return;
-            }
+            (data) => (data.body),
+            async (err) => (await interaction.reply({ content: "Couldn't find song!", ephemeral: true }))
         ) as SpotifyApi.SingleTrackResponse;
 
         if (!songData) return;
 
         const color = await getAverageColor(songData.album.images[2].url);
-        let threadID;
 
-        await forum?.threads
+        const threadID = await forum?.threads
             .create({
-                name: songData.name + " - " + songData.artists[0].name,
+                name: `${songData.name} - ${songData.artists[0].name}`,
                 autoArchiveDuration: ThreadAutoArchiveDuration.OneDay,
                 message: {
-                    content:
-                        interaction.member.toString() +
-                        " recommended **" +
-                        songData.name +
-                        " by " +
-                        songData.artists[0].name +
-                        "**\n" +
-                        songData.external_urls.spotify
+                    content: 
+                        `${interaction.member.toString()} recommended `+
+                        `**${songData.name} by ${songData.artists[0].name}**\n`+
+                        `${songData.external_urls.spotify}`
                 },
                 reason: "Song recommended through HomieBot by: " + interaction.member.displayName
             })
             .then((t) => {
-                // const row = new ActionRowBuilder().addComponents(
-                //     new ButtonBuilder()
-                //         .setCustomId("rec-song#" + songData.artists[0].external_urls.spotify)
-                //         .setLabel("More songs from " + songData.artists[0].name)
-                //         .setStyle(ButtonStyle.Secondary)
-                // );
+                const button = new ButtonBuilder()
+                                   .setCustomId(`rec-song#${songData.artists[0].external_urls.spotify}`)
+                                   .setLabel(`More songs by ${songData.artists[0].name}`)
+                                   .setStyle(ButtonStyle.Secondary);
                 const embed = createSongEmbed(songData, interaction.member).setColor(color.hex as ColorResolvable);
-                threadID = t.id;
-                //t.send({ embeds: [embed], content: "", components: [row] });
-                t.send({ embeds: [embed], content: ""});
+                t.send({ 
+                    content: '',
+                    embeds: [embed],
+                    components: [new ActionRowBuilder<ButtonBuilder>().setComponents([button])]
+                });
+                return t.id;
             })
             .catch(console.error);
 
@@ -67,6 +57,12 @@ export default new Command()
 
 const createSongEmbed = (data: SpotifyApi.SingleTrackResponse, member: GuildMember) => {
     const { album, name, external_urls, artists, duration_ms } = data;
+
+    const millisToMinutesAndSeconds = (millis: number) => {
+        var minutes = Math.floor(millis / 60000);
+        var seconds = ((millis % 60000) / 1000).toFixed(0);
+        return +seconds == 60 ? minutes + 1 + ":00" : minutes + ":" + (+seconds < 10 ? "0" : "") + seconds;
+    }
 
     const embed = new EmbedBuilder()
         .setAuthor({ name: member.displayName, iconURL: member.displayAvatarURL() })
@@ -90,14 +86,8 @@ const createSongEmbed = (data: SpotifyApi.SingleTrackResponse, member: GuildMemb
                 inline: false
             }
         ])
-        .setFooter({ text: "released" })
+        .setFooter({ text: "Released" })
         .setTimestamp(new Date(album.release_date));
 
     return embed;
 };
-
-function millisToMinutesAndSeconds(millis: number) {
-    var minutes = Math.floor(millis / 60000);
-    var seconds = ((millis % 60000) / 1000).toFixed(0);
-    return +seconds == 60 ? minutes + 1 + ":00" : minutes + ":" + (+seconds < 10 ? "0" : "") + seconds;
-}
