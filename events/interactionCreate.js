@@ -7,7 +7,6 @@ module.exports = {
 
         if (interaction.isCommand()) {
             const command = interaction.client.commands.get(interaction.commandName);
-            console.log(command);
             try {
                 await command.execute(interaction);
             } catch (error) {

@@ -1,35 +1,45 @@
-const { SlashCommandBuilder, ThreadAutoArchiveDuration } = require('discord.js');
-const {spotifyApi} = require('../spotify');
+const { SlashCommandBuilder, ThreadAutoArchiveDuration, EmbedBuilder } = require('discord.js');
+const { spotifyApi } = require('../spotify');
 
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('rec-song')
         .setDescription('Create song recommendation')
-        .addStringOption((option) => option.setName("name").setDescription("The name of the song").setRequired(true)),
-    async execute (interaction) {
-        const name = interaction.options.getString("name");
+        .addStringOption((option) => option.setName("url").setDescription("url of song").setRequired(true)),
+    async execute(interaction) {
+        const url = interaction.options.getString("url");
         const forum = interaction.guild.channels.cache.get('1031337709568020600');
-        forum.threads.create({
-            name: name,
-            autoArchiveDuration: ThreadAutoArchiveDuration.ThreeDays,
+
+        const songID = url.split('/').pop().split('?')[0];
+        let songData;
+
+        await spotifyApi.getTrack(songID).then(
+            function (data) {
+                songData = data.body
+            },
+            function (err) {
+                console.error(err);
+            }
+        );
+
+        await forum.threads.create({
+            name: songData.name + ' -- ' + interaction.member.displayName,
+            autoArchiveDuration: ThreadAutoArchiveDuration.OneDay,
             message: {
-             content: 'Test channel',
+                content: interaction.member.toString() + ' recommended **' + songData.name + ' by ' + 
+                songData.artists[0].name + '**\n' + songData.external_urls.spotify,
             },
             reason: 'Needed a separate thread for food',
-          })
-          .then(threadChannel => console.log(threadChannel))
-          .catch(console.error);
+        })
+        .then((t) => {
+            let embed = new EmbedBuilder().setDescription('anything in there');
+            t.send({embeds: [embed], content: 'anything i guess'});
+        })
+        .catch(console.error);
 
-          spotifyApi.getArtistAlbums('43ZHCT0cAZBISjO8DG9PnE').then(
-            function(data) {
-              console.log('Artist albums', data.body);
-            },
-            function(err) {
-              console.error(err);
-            }
-          );
 
-        await interaction.reply(`mf said ${name}. lol`)
+
+        await interaction.reply({ content: `mf said ${songData.name}. lol`, ephemeral: true })
     }
 }
