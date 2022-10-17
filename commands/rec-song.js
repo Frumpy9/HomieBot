@@ -40,9 +40,9 @@ module.exports = {
         })
         .then((t) => {
             const row = new ActionRowBuilder().addComponents( new ButtonBuilder()
-                .setCustomId('primary')
-				.setLabel('Click me!')
-				.setStyle(ButtonStyle.Primary),
+                .setCustomId('rec-song#'+songData.artists[0].external_urls.spotify)
+				.setLabel('More songs from ' + songData.artists[0].name)
+				.setStyle(ButtonStyle.Secondary),
             )
             const embed = createSongEmbed(songData, interaction.member).setColor(color.hex);
             threadId = t.id;
@@ -53,6 +53,10 @@ module.exports = {
 
 
         await interaction.reply({ content: 'Created song recommendation: <#' + threadId + '>', ephemeral: true })
+    },
+    async onButton(interaction, params) {
+        const url = params[0];
+        await interaction.reply({ content: url, ephemeral: true })
     }
 }
 
