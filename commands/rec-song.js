@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, ThreadAutoArchiveDuration, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder, ThreadAutoArchiveDuration, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const { spotifyApi } = require('../spotify');
 const { getAverageColor } = require('fast-average-color-node');
 
@@ -27,25 +27,32 @@ module.exports = {
         );
 
         const color = await getAverageColor(songData.album.images[2].url);
+        let threadId;
 
         await forum.threads.create({
-            name: songData.name + ' -- ' + interaction.member.displayName,
+            name: songData.name + ' - ' + songData.artists[0].name,
             autoArchiveDuration: ThreadAutoArchiveDuration.OneDay,
             message: {
                 content: interaction.member.toString() + ' recommended **' + songData.name + ' by ' + 
                 songData.artists[0].name + '**\n' + songData.external_urls.spotify,
             },
-            reason: 'Needed a separate thread for food',
+            reason: 'Song recommended through HomieBot by: ' + interaction.member.displayName,
         })
         .then((t) => {
+            const row = new ActionRowBuilder().addComponents( new ButtonBuilder()
+                .setCustomId('primary')
+				.setLabel('Click me!')
+				.setStyle(ButtonStyle.Primary),
+            )
             const embed = createSongEmbed(songData, interaction.member).setColor(color.hex);
-            t.send({embeds: [embed], content: ''});
+            threadId = t.id;
+            t.send({embeds: [embed], content: '', components: [row]});
         })
         .catch(console.error);
 
 
 
-        await interaction.reply({ content: `mf said ${songData.name}. lol`, ephemeral: true })
+        await interaction.reply({ content: 'Created song recommendation: <#' + threadId + '>', ephemeral: true })
     }
 }
 
