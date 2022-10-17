@@ -33,8 +33,47 @@ module.exports = {
             reason: 'Needed a separate thread for food',
         })
         .then((t) => {
-            let embed = new EmbedBuilder().setDescription('anything in there');
-            t.send({embeds: [embed], content: 'anything i guess'});
+            //let embed = new EmbedBuilder().setDescription('anything in there');
+            let embed = {
+                "title": songData.name+ " by " + songData.artists[0].name,
+                "description": "",
+                "color": 48028,
+                "timestamp": new Date(songData.album.release_date),
+                "url": songData.external_urls.spotify,
+                "author": {
+                    "name": interaction.member.displayName,
+                    //"url": "https://discord.com",
+                    "icon_url": interaction.member.displayAvatarURL()
+                },
+                "thumbnail": {
+                    "url": songData.album.images[2].url
+                },
+                // "image": {
+                //     "url": ""
+                // },
+                "footer": {
+                    "text": "Released",
+                    //"icon_url": ""
+                },
+                "fields": [
+                    {
+                        "name": "Artists",
+                        "value": songData.artists.map((artist) => "["+artist.name+"]("+artist.external_urls.spotify+")").join('\n'),
+                        "inline": true
+                    },
+                    {
+                        "name": "Album",
+                        "value": "["+songData.album.name+"]("+songData.album.external_urls.spotify+")",
+                        "inline": true
+                    },
+                    {
+                        "name": "Duration",
+                        "value": millisToMinutesAndSeconds(songData.duration_ms),
+                        "inline": false
+                    }
+                ]
+            }
+            t.send({embeds: [embed], content: ''});
         })
         .catch(console.error);
 
@@ -43,3 +82,13 @@ module.exports = {
         await interaction.reply({ content: `mf said ${songData.name}. lol`, ephemeral: true })
     }
 }
+
+function millisToMinutesAndSeconds(millis) {
+    var minutes = Math.floor(millis / 60000);
+    var seconds = ((millis % 60000) / 1000).toFixed(0);
+    return (
+        seconds == 60 ?
+        (minutes+1) + ":00" :
+        minutes + ":" + (seconds < 10 ? "0" : "") + seconds
+      );
+  }
