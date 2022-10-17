@@ -92,7 +92,7 @@ const createSongEmbed = (data, member) => {
 				inline: false
 			}
 		])
-		.setFooter({ text: "released" })
+		.setFooter({ text: "Released" })
 		.setTimestamp(new Date(album.release_date));
 
 	return embed;
