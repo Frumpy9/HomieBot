@@ -28,7 +28,7 @@ module.exports = {
 		);
 
 		const color = await getAverageColor(songData.album.images[2].url);
-		let threadId;
+		let threadID;
 
 		await forum.threads
 			.create({
@@ -54,12 +54,12 @@ module.exports = {
 						.setStyle(ButtonStyle.Secondary)
 				);
 				const embed = createSongEmbed(songData, interaction.member).setColor(color.hex);
-				threadId = t.id;
+				threadID = t.id;
 				t.send({ embeds: [embed], content: "", components: [row] });
 			})
 			.catch(console.error);
 
-		await interaction.reply({ content: "Created song recommendation: <#" + threadId + ">", ephemeral: true });
+		await interaction.reply({ content: "Created song recommendation: <#" + threadID + ">", ephemeral: true });
 	},
 	async onButton(interaction, params) {
 		const url = params[0];
