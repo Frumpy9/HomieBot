@@ -2,6 +2,8 @@ const { SlashCommandBuilder, ThreadAutoArchiveDuration, EmbedBuilder, ActionRowB
 const { spotifyApi } = require("../spotify");
 const { getAverageColor } = require("fast-average-color-node");
 
+const{ forumID } = require("../config.json")
+
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName("rec-song")
@@ -9,7 +11,7 @@ module.exports = {
 		.addStringOption((option) => option.setName("url").setDescription("url of song").setRequired(true)),
 	async execute(interaction) {
 		const url = interaction.options.getString("url");
-		const forum = interaction.guild.channels.cache.get("1031337709568020600");
+		const forum = interaction.guild.channels.cache.get(forumID);
 
 		const songID = url.split("/").pop().split("?")[0];
 		let songData;
