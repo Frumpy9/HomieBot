@@ -1,24 +1,22 @@
-var SpotifyWebApi = require('spotify-web-api-node');
-const { spotifyID, spotifySecret } = require('./config.json');
+import SpotifyWebApi from 'spotify-web-api-node';
+import config from './config.json' assert {type: 'json'}
+const { spotifyID, spotifySecret } = config;
 
 
-const spotifyApi = new SpotifyWebApi({
-    clientId: spotifyID,
-    clientSecret: spotifySecret
+export const spotifyApi = new SpotifyWebApi({
+  clientId: spotifyID,
+  clientSecret: spotifySecret
 });
 
 spotifyApi.clientCredentialsGrant().then(
-    function(data) {
-      console.log('The access token expires in ' + data.body['expires_in']);
-      console.log('The access token is ' + data.body['access_token']);
-  
-      // Save the access token so that it's used in future calls
-      spotifyApi.setAccessToken(data.body['access_token']);
-    },
-    function(err) {
-      console.log('Something went wrong when retrieving an access token', err);
-    }
-  );
+  function (data) {
+    console.log('The access token expires in ' + data.body['expires_in']);
+    console.log('The access token is ' + data.body['access_token']);
 
-
-module.exports.spotifyApi = spotifyApi;
+    // Save the access token so that it's used in future calls
+    spotifyApi.setAccessToken(data.body['access_token']);
+  },
+  function (err) {
+    console.log('Something went wrong when retrieving an access token', err);
+  }
+);
