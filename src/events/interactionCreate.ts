@@ -1,4 +1,4 @@
-import { CommandInteractionOptionResolver, Interaction } from "discord.js";
+import { CommandInteractionOptionResolver, Interaction, InteractionType } from "discord.js";
 import { client } from "..";
 import { ExtendedClient } from "../structs/Client";
 import { Event } from "../structs/Event";
@@ -21,6 +21,8 @@ export default new Event('interactionCreate', async (interaction) => {
         callComponent(client, interaction, ComponentTypes.button);
     } else if (interaction.isSelectMenu()) {
         callComponent(client, interaction, ComponentTypes.menu);
+    } else if (interaction.type == InteractionType.ModalSubmit){
+        callComponent(client, interaction, ComponentTypes.modal);
     }
 })
 

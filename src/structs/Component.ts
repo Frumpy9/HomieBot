@@ -1,5 +1,5 @@
 import { ButtonBuilder } from "@discordjs/builders";
-import { BaseInteraction, ButtonInteraction, ComponentBuilder, ModalBuilder, SelectMenuBuilder, SelectMenuInteraction } from "discord.js";
+import { BaseInteraction, ButtonInteraction, ComponentBuilder, ModalBuilder, ModalSubmitInteraction, SelectMenuBuilder, SelectMenuInteraction } from "discord.js";
 import { CallbackFunction, ComponentParam, ComponentTypes, BaseType } from "../types/Component";
 
 export abstract class Component<K extends BaseType, I extends BaseInteraction>{
@@ -33,3 +33,4 @@ export abstract class Component<K extends BaseType, I extends BaseInteraction>{
 
 export class Button extends Component<ButtonBuilder, ButtonInteraction> { type = ComponentTypes.button }
 export class Menu extends Component<SelectMenuBuilder, SelectMenuInteraction>{ type = ComponentTypes.menu }
+export class Modal extends Component<ModalBuilder, ModalSubmitInteraction> { type = ComponentTypes.modal }

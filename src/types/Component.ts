@@ -1,4 +1,4 @@
-import { BaseInteraction, ButtonBuilder, ComponentBuilder, SelectMenuBuilder } from "discord.js";
+import { BaseInteraction, ButtonBuilder, ComponentBuilder, ModalBuilder, SelectMenuBuilder } from "discord.js";
 import { ExtendedClient } from "../structs/Client";
 
 export type ComponentParam<I extends BaseType> = (...args: any) => I | Promise<I>;
@@ -16,6 +16,7 @@ export interface RenderArgs{
 export enum ComponentTypes {
     button,
     menu,
+    modal,
 }
 
 export interface IComponent{
@@ -25,4 +26,4 @@ export interface IComponent{
 }
 
 export type CallbackFunction<I extends BaseInteraction> = (a: CallbackParams<I>, ...args: any) => any
-export type BaseType = ButtonBuilder | SelectMenuBuilder;
+export type BaseType = ButtonBuilder | SelectMenuBuilder | ModalBuilder;

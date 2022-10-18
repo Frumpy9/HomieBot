@@ -8,7 +8,8 @@ export default new Button((name) =>
     new ButtonBuilder()
     .setLabel(`Add ${name} to a homie playlist`)
     .setStyle(ButtonStyle.Secondary)
-).setCallback(async ({interaction}, uri, name) => {const menu = await playlistMenu.render([uri], name);
+).setCallback(async ({interaction}, uri, name) => {
+    const menu = await playlistMenu.render([uri, name], name);
     await interaction.reply({ 
         content: '', 
         ephemeral: true, 
