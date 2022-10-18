@@ -39,8 +39,6 @@ export class ExtendedClient extends Client {
     async registerModules(){
         //commands
         const slashCommands: ApplicationCommandDataResolvable[] = [];
-        console.log((`${__dirname}\\..\\commands\\*\\*{.ts,.js}`).replace(/\\/g,'/'));
-        
         
         const commandFiles = await globPromise((`${__dirname}\\..\\commands\\*\\*{.ts,.js}`).replace(/\\/g,'/'));
         console.log({ commandFiles });
