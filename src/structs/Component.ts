@@ -22,8 +22,8 @@ export abstract class Component<K extends BaseType, I extends BaseInteraction>{
         return this;
     }
 
-    render(data: string[], ...renderProps: any[]): K{
-        const builder: K = this.renderFunction.apply(null, renderProps);
+    async render(data: string[], ...renderProps: any[]): Promise<K>{
+        const builder: K = await this.renderFunction.apply(null, renderProps);
         builder.setCustomId(this.name + data.map(p => p = '#'+p).join())
         return builder;
     }

@@ -1,12 +1,18 @@
 import { ButtonBuilder } from "@discordjs/builders";
-import { ButtonStyle, GuildMember } from "discord.js";
+import { ActionRowBuilder, ButtonStyle, GuildMember, MessageActionRowComponentBuilder } from "discord.js";
 import { Button } from "../../structs/Component";
+import playlistMenu from "../menus/playlistMenu";
 
 
-export default new Button((name) => 
+export default new Button((name) =>
     new ButtonBuilder()
     .setLabel(`Add ${name} to a homie playlist`)
     .setStyle(ButtonStyle.Secondary)
-).setCallback(async ({interaction}, songID) => {
-    await interaction.reply({ content: songID, ephemeral: true })
+).setCallback(async ({interaction}, songID, name) => {
+    const menu = await playlistMenu.render([songID], name);
+    await interaction.reply({ 
+        content: '', 
+        ephemeral: true, 
+        components: [new ActionRowBuilder<MessageActionRowComponentBuilder>().setComponents([menu])]
+    })
 }).setName('playlist_button');

@@ -10,7 +10,6 @@ const globPromise = promisify(glob);
 
 export class ExtendedClient extends Client {
     commands: Collection<string, ICommand> = new Collection();
-    buttons: Collection<string, IComponent> = new Collection();
     components: Collection<ComponentTypes, Collection<string, IComponent>> = new Collection();
 
     constructor(){
