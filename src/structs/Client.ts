@@ -4,11 +4,13 @@ import glob from "glob";
 import {promisify} from "util";
 import { registerCommandsParams } from "../types/Client";
 import { Event } from "./Event";
+import { Button } from "./Component";
 
 const globPromise = promisify(glob);
 
 export class ExtendedClient extends Client {
     commands: Collection<string, ICommand> = new Collection();
+    buttons: Collection<string, Button> = new Collection();
 
     constructor(){
         super({ intents: 32767});
@@ -52,6 +54,17 @@ export class ExtendedClient extends Client {
                 guildId: process.env.guildId
             });
         });
+
+        //buttons
+        const buttonFiles = await globPromise(`${__dirname}/../components/buttons/*{.ts,.js}`);
+        console.log({ buttonFiles });
+        buttonFiles.forEach(async file => {
+            const button: Button = await this.importFile(file);
+            console.log(button);
+            
+            this.buttons.set(button.name, button)
+        })
+        
         
         //events
         const eventFiles = await globPromise(`${__dirname}/../events/*{.ts,.js}`);

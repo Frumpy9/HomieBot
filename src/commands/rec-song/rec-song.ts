@@ -1,7 +1,8 @@
 import { Command } from "../../structs/Command";
 import { spotify } from "../..";
 import { getAverageColor } from "fast-average-color-node";
-import { ActionRowBuilder, APIActionRowComponent, ButtonBuilder, ButtonComponent, ButtonStyle, ColorResolvable, ComponentType, EmbedBuilder, ForumChannel, GuildMember, RESTOAuth2AdvancedBotAuthorizationQueryResult, ThreadAutoArchiveDuration } from "discord.js";
+import { ActionRowBuilder, AnyComponentBuilder, APIActionRowComponent, APIMessageActionRowComponent, ButtonBuilder, ButtonComponent, ButtonStyle, ColorResolvable, ComponentBuilder, ComponentType, EmbedBuilder, ForumChannel, GuildMember, MessageActionRowComponentBuilder, RESTOAuth2AdvancedBotAuthorizationQueryResult, ThreadAutoArchiveDuration } from "discord.js";
+import ArtistButton from "../../components/buttons/artist";
 
 export default new Command()
     .setName("rec-song")
@@ -38,15 +39,12 @@ export default new Command()
                 reason: "Song recommended through HomieBot by: " + interaction.member.displayName
             })
             .then((t) => {
-                const button = new ButtonBuilder()
-                                   .setCustomId(`rec-song#${songData.artists[0].external_urls.spotify}`)
-                                   .setLabel(`More songs by ${songData.artists[0].name}`)
-                                   .setStyle(ButtonStyle.Secondary);
+                const button = ArtistButton.render([songData.artists[0].external_urls.spotify], songData)
                 const embed = createSongEmbed(songData, interaction.member).setColor(color.hex as ColorResolvable);
                 t.send({ 
                     content: '',
                     embeds: [embed],
-                    components: [new ActionRowBuilder<ButtonBuilder>().setComponents([button])]
+                    components: [new ActionRowBuilder<MessageActionRowComponentBuilder>().setComponents([button])]
                 });
                 return t.id;
             })
