@@ -1,8 +1,8 @@
 import { ButtonBuilder } from "@discordjs/builders";
-import { BaseInteraction, ButtonInteraction, ComponentBuilder } from "discord.js";
-import { CallbackFunction, ComponentParam, ComponentTypes } from "../types/Component";
+import { BaseInteraction, ButtonInteraction, ComponentBuilder, ModalBuilder, SelectMenuBuilder, SelectMenuInteraction } from "discord.js";
+import { CallbackFunction, ComponentParam, ComponentTypes, BaseType } from "../types/Component";
 
-export abstract class Component<K extends ComponentBuilder, I extends BaseInteraction>{
+export abstract class Component<K extends BaseType, I extends BaseInteraction>{
     abstract type: ComponentTypes;
     name: string = '';
     renderFunction: ComponentParam<K>
@@ -22,15 +22,12 @@ export abstract class Component<K extends ComponentBuilder, I extends BaseIntera
         return this;
     }
 
-    abstract render(data: string[], ...renderProps: any[]): K;
-}
-
-export class Button extends Component<ButtonBuilder, ButtonInteraction>{
-    type = ComponentTypes.button;
-    render(data: string[], ...renderProps: any[]): ButtonBuilder{
-        
-        const builder: ButtonBuilder = this.renderFunction.apply(null, renderProps);
+    render(data: string[], ...renderProps: any[]): K{
+        const builder: K = this.renderFunction.apply(null, renderProps);
         builder.setCustomId(this.name + data.map(p => p = '#'+p).join())
         return builder;
     }
 }
+
+export class Button extends Component<ButtonBuilder, ButtonInteraction> { type = ComponentTypes.button }
+export class Menu extends Component<SelectMenuBuilder, SelectMenuInteraction>{ type = ComponentTypes.menu }

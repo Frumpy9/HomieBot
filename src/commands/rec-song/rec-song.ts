@@ -3,6 +3,7 @@ import { spotify } from "../..";
 import { getAverageColor } from "fast-average-color-node";
 import { ActionRowBuilder, AnyComponentBuilder, APIActionRowComponent, APIMessageActionRowComponent, ButtonBuilder, ButtonComponent, ButtonStyle, ColorResolvable, ComponentBuilder, ComponentType, EmbedBuilder, ForumChannel, GuildMember, MessageActionRowComponentBuilder, RESTOAuth2AdvancedBotAuthorizationQueryResult, ThreadAutoArchiveDuration } from "discord.js";
 import ArtistButton from "../../components/buttons/artist";
+import addToPlaylist from "../../components/buttons/addToPlaylist";
 
 export default new Command()
     .setName("rec-song")
@@ -39,12 +40,13 @@ export default new Command()
                 reason: "Song recommended through HomieBot by: " + interaction.member.displayName
             })
             .then((t) => {
-                const button = ArtistButton.render([songData.artists[0].external_urls.spotify], songData)
+                const artistButton = ArtistButton.render([songData.artists[0].external_urls.spotify], songData);
+                const playlistButton = addToPlaylist.render([songID], songData.name)
                 const embed = createSongEmbed(songData, interaction.member).setColor(color.hex as ColorResolvable);
                 t.send({ 
                     content: '',
                     embeds: [embed],
-                    components: [new ActionRowBuilder<MessageActionRowComponentBuilder>().setComponents([button])]
+                    components: [new ActionRowBuilder<MessageActionRowComponentBuilder>().setComponents([artistButton, playlistButton])]
                 });
                 return t.id;
             })
