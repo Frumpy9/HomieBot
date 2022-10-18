@@ -13,9 +13,14 @@ export interface RenderArgs{
     renderProps: any;
 }
 
+export enum ComponentTypes {
+    button,
+}
+
 export interface IComponent{
     name: string;
     callback: CallbackFunction<BaseInteraction>;
+    type: ComponentTypes;
 }
 
 export type CallbackFunction<I extends BaseInteraction> = (a: CallbackParams<I>, ...args: any) => any

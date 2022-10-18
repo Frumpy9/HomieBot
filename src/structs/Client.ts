@@ -5,12 +5,14 @@ import {promisify} from "util";
 import { registerCommandsParams } from "../types/Client";
 import { Event } from "./Event";
 import { Button } from "./Component";
+import { ComponentTypes, IComponent } from "../types/Component";
 
 const globPromise = promisify(glob);
 
 export class ExtendedClient extends Client {
     commands: Collection<string, ICommand> = new Collection();
-    buttons: Collection<string, Button> = new Collection();
+    buttons: Collection<string, IComponent> = new Collection();
+    components: Collection<ComponentTypes, Collection<string, IComponent>> = new Collection();
 
     constructor(){
         super({ intents: 32767});
@@ -55,14 +57,14 @@ export class ExtendedClient extends Client {
             });
         });
 
-        //buttons
-        const buttonFiles = await globPromise(`${__dirname}/../components/buttons/*{.ts,.js}`);
-        console.log({ buttonFiles });
-        buttonFiles.forEach(async file => {
-            const button: Button = await this.importFile(file);
-            console.log(button);
-            
-            this.buttons.set(button.name, button)
+        //components
+        const componentFiles = await globPromise(`${__dirname}/../components/*/*{.ts,.js}`);
+        console.log({ componentFiles });
+        componentFiles.forEach(async file => {
+            const component: IComponent = await this.importFile(file);
+            const componentCollection = this.components.get(component.type)
+            if (!componentCollection) this.components.set(component.type, new Collection());
+            this.components.get(component.type)?.set(component.name, component);
         })
         
         

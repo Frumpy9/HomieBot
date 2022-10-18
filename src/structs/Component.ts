@@ -1,9 +1,9 @@
-import { AnyComponentBuilder } from "@discordjs/builders";
 import { ButtonBuilder } from "@discordjs/builders";
-import { BaseInteraction, ButtonInteraction, ComponentBuilder, RESTOAuth2AdvancedBotAuthorizationQueryResult } from "discord.js";
-import { CallbackParams, CallbackFunction, ComponentParam, RenderArgs } from "../types/Component";
+import { BaseInteraction, ButtonInteraction, ComponentBuilder } from "discord.js";
+import { CallbackFunction, ComponentParam, ComponentTypes } from "../types/Component";
 
 export abstract class Component<K extends ComponentBuilder, I extends BaseInteraction>{
+    abstract type: ComponentTypes;
     name: string = '';
     renderFunction: ComponentParam<K>
     callback: CallbackFunction<I> = () => console.log('callback not implemented');
@@ -26,6 +26,7 @@ export abstract class Component<K extends ComponentBuilder, I extends BaseIntera
 }
 
 export class Button extends Component<ButtonBuilder, ButtonInteraction>{
+    type = ComponentTypes.button;
     render(data: string[], ...renderProps: any[]): ButtonBuilder{
         
         const builder: ButtonBuilder = this.renderFunction.apply(null, renderProps);
