@@ -4,7 +4,6 @@ import glob from "glob";
 import {promisify} from "util";
 import { registerCommandsParams } from "../types/Client";
 import { Event } from "./Event";
-import { Button } from "./Component";
 import { ComponentTypes, IComponent } from "../types/Component";
 
 const globPromise = promisify(glob);
@@ -40,7 +39,10 @@ export class ExtendedClient extends Client {
     async registerModules(){
         //commands
         const slashCommands: ApplicationCommandDataResolvable[] = [];
-        const commandFiles = await globPromise(`${__dirname}/../commands/*/*{.ts,.js}`);
+        console.log((`${__dirname}\\..\\commands\\*\\*{.ts,.js}`).replace(/\\/g,'/'));
+        
+        
+        const commandFiles = await globPromise((`${__dirname}\\..\\commands\\*\\*{.ts,.js}`).replace(/\\/g,'/'));
         console.log({ commandFiles });
         commandFiles.forEach(async file => {
             const command: ICommand = await this.importFile(file);
@@ -58,7 +60,7 @@ export class ExtendedClient extends Client {
         });
 
         //components
-        const componentFiles = await globPromise(`${__dirname}/../components/*/*{.ts,.js}`);
+        const componentFiles = await globPromise((`${__dirname}\\..\\components\\*\\*{.ts,.js}`).replace(/\\/g,'/'));
         console.log({ componentFiles });
         componentFiles.forEach(async file => {
             const component: IComponent = await this.importFile(file);
@@ -69,7 +71,7 @@ export class ExtendedClient extends Client {
         
         
         //events
-        const eventFiles = await globPromise(`${__dirname}/../events/*{.ts,.js}`);
+        const eventFiles = await globPromise((`${__dirname}\\..\\events\\*{.ts,.js}`).replace(/\\/g,'/'));
         eventFiles.forEach(async file => {
             const event: Event<keyof ClientEvents> = await this.importFile(file);
             this.on(event.event, event.run);
