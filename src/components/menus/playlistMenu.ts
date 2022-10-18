@@ -31,6 +31,6 @@ export default new Menu(async (name) => {
 }).setCallback(async ({interaction}, uri, name) => {
     const value = interaction.values[0];
     if (value == 'new') return interaction.showModal(await createPlaylist.render([uri], name))
-    await spotify.addTracksToPlaylist(interaction.values[0], [uri]);
+    await spotify.addTracksToPlaylist(interaction.values[0], [uri, name]);
     await interaction.reply({ content: 'added song to playlist!', ephemeral: true })
 }).setName('playlist_menu');
