@@ -28,10 +28,10 @@ export class ExtendedClient extends Client {
     async registerCommands({commands, guildId}: registerCommandsParams) {
         if (guildId) {
             this.guilds.cache.get(guildId)?.commands.set(commands);
-            console.log(`Registering commands to guild: ${guildId}`);
+            // console.log(`Registering commands to guild: ${guildId}`);
         } else {
             this.application?.commands.set(commands);
-            console.log(`Registering global commands`);
+            // console.log(`Registering global commands`);
         }
     }
 
@@ -40,7 +40,7 @@ export class ExtendedClient extends Client {
         const slashCommands: ApplicationCommandDataResolvable[] = [];
         
         const commandFiles = await globPromise((`${__dirname}\\..\\commands\\*\\*{.ts,.js}`).replace(/\\/g,'/'));
-        console.log({ commandFiles });
+        // console.log({ commandFiles });
         commandFiles.forEach(async file => {
             const command: ICommand = await this.importFile(file);
             if (!command.name) return;
@@ -58,7 +58,7 @@ export class ExtendedClient extends Client {
 
         //components
         const componentFiles = await globPromise((`${__dirname}\\..\\components\\*\\*{.ts,.js}`).replace(/\\/g,'/'));
-        console.log({ componentFiles });
+        // console.log({ componentFiles });
         componentFiles.forEach(async file => {
             const component: IComponent = await this.importFile(file);
             const componentCollection = this.components.get(component.type)
@@ -73,6 +73,6 @@ export class ExtendedClient extends Client {
             const event: Event<keyof ClientEvents> = await this.importFile(file);
             this.on(event.event, event.run);
         })
-        console.log({ eventFiles });
+        // console.log({ eventFiles });
     }
 }

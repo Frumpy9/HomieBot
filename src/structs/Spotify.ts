@@ -4,8 +4,16 @@ export class Spotify extends SpotifyWebApi {
     constructor() {
         super({
             clientId: process.env.spotifyID,
-            clientSecret: process.env.spotifySecret
+            clientSecret: process.env.spotifySecret,
+            redirectUri: process.env.redirectURI
         });
+    }
+
+    createAccessLink() : string{
+        var scopes = ['user-read-private', 'user-read-email', 'playlist-modify-public'],
+        state = 'some-state-of-my-choice';
+
+        return this.createAuthorizeURL(scopes, state);
     }
 
     async refreshToken() {

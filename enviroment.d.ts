@@ -9,6 +9,7 @@ declare global {
             forumID: string;
             spotifyID: string;
             spotifySecret: string;
+            redirectURI: string;
         }
     }
 }
