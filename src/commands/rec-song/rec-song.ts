@@ -40,8 +40,8 @@ export default new Command()
                 reason: "Song recommended through HomieBot by: " + interaction.member.displayName
             })
             .then(async (t) => {
-                const artistButton = await ArtistButton.render([songData.artists[0].external_urls.spotify], songData);
-                const playlistButton = await addToPlaylist.render([songData.uri, songData.name], songData.name)
+                const artistButton = await ArtistButton.render([songData.artists[0].id]);
+                const playlistButton = await addToPlaylist.render([songData.artists[0].id, songData.id])
                 const embed = createSongEmbed(songData, interaction.member).setColor(color.hex as ColorResolvable);
                 t.send({ 
                     content: '',

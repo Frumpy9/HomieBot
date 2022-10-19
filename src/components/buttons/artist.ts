@@ -3,10 +3,10 @@ import { ButtonStyle, GuildMember } from "discord.js";
 import { Button } from "../../structs/Component";
 
 
-export default new Button((songData) => 
+export default new Button(() => 
     new ButtonBuilder()
-    .setLabel(`More songs by ${songData.artists[0].name}`)
+    .setLabel(`More songs by artist`)
     .setStyle(ButtonStyle.Secondary)
-).setCallback(async ({interaction}, url) => {
-    await interaction.reply({ content: url, ephemeral: true })
+).setCallback(async ({interaction}, artistId) => {
+    await interaction.reply({ content: 'https://open.spotify.com/artist/'+artistId, ephemeral: true })
 }).setName('artist_button');

@@ -31,6 +31,8 @@ const callComponent = async (client: ExtendedClient, interaction: any, type: Com
     if (!components) return console.error('no components found');
 
     const { customId } = interaction;
+    console.log(customId);
+    
     const embeddedArgs = customId.split('#');
     const name = embeddedArgs.shift();
     if (!name) return console.error("didnt get name");
