@@ -36,6 +36,7 @@ const callComponent = async (client: ExtendedClient, interaction: any, type: Com
     const embeddedArgs = customId.split('#');
     const name = embeddedArgs.shift();
     if (!name) return console.error("didnt get name");
+    if (client.collectors.has(name)) return;
 
     const component = components.get(name);
     if (!component) return console.error(`couldnt find command ${embeddedArgs[0]}`);

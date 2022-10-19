@@ -1,5 +1,6 @@
 import { ButtonBuilder } from "@discordjs/builders";
 import { BaseInteraction, ButtonInteraction, ComponentBuilder, ModalBuilder, ModalSubmitInteraction, SelectMenuBuilder, SelectMenuInteraction } from "discord.js";
+import { client } from "..";
 import { CallbackFunction, ComponentParam, ComponentTypes, BaseType } from "../types/Component";
 
 export abstract class Component<K extends BaseType, I extends BaseInteraction>{
@@ -27,6 +28,7 @@ export abstract class Component<K extends BaseType, I extends BaseInteraction>{
         let customID = this.name;
         data.forEach(i => customID+=`#${i}`);
         builder.setCustomId(customID);
+        client.collectors.add(this.name);
         return builder;
     }
 }

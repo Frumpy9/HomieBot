@@ -11,6 +11,7 @@ const globPromise = promisify(glob);
 export class ExtendedClient extends Client {
     commands: Collection<string, ICommand> = new Collection();
     components: Collection<ComponentTypes, Collection<string, IComponent>> = new Collection();
+    collectors: Set<string> = new Set();
 
     constructor(){
         super({ intents: 32767});
