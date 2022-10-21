@@ -5,10 +5,10 @@ import { ExtendedClient } from "./Client";
 
 type Interactions = ButtonInteraction | SelectMenuInteraction | ModalSubmitInteraction
 type RenderFunction = (menu: MenuInstance,props: any)=>Promise<RawMessagePayloadData> | RawMessagePayloadData;
-type RebuildFunction = (interaction: InteractionData, id: string)=> any;
+type RebuildFunction = (interaction: InteractionData, id: componentId)=> any;
 type ComponentCallback = (interaction: InteractionData) => void;
 
-interface componentId{
+export interface componentId{
     menuId: string,
     instanceId: string,
     componentId: string,

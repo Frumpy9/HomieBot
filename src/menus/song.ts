@@ -1,5 +1,5 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, MessageActionRowComponentBuilder } from "discord.js";
-import { InteractionData, Menu, MenuInstance } from "../structs/Menu";
+import { componentId, InteractionData, Menu, MenuInstance } from "../structs/Menu";
 
 
 export default new Menu('name', async (menu: MenuInstance, test: string) => {
@@ -29,7 +29,7 @@ export default new Menu('name', async (menu: MenuInstance, test: string) => {
         )]
     }
 },
-    async (i: InteractionData, id: string) => {
-        return id;
+    async (i: InteractionData, id: componentId) => {
+        return id.componentId;
     }
 )
