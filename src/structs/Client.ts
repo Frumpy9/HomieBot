@@ -5,12 +5,14 @@ import {promisify} from "util";
 import { registerCommandsParams } from "../types/Client";
 import { Event } from "./Event";
 import { ComponentTypes, IComponent } from "../types/Component";
+import { Menu } from "./Menu";
 
 const globPromise = promisify(glob);
 
 export class ExtendedClient extends Client {
     commands: Collection<string, ICommand> = new Collection();
     components: Collection<ComponentTypes, Collection<string, IComponent>> = new Collection();
+    menus: Collection<string, Menu> = new Collection();
     collectors: Set<string> = new Set();
 
     constructor(){
@@ -65,6 +67,16 @@ export class ExtendedClient extends Client {
             const componentCollection = this.components.get(component.type)
             if (!componentCollection) this.components.set(component.type, new Collection());
             this.components.get(component.type)?.set(component.name, component);
+        })
+
+        //menus
+        const menuFiles = await globPromise((`${__dirname}\\..\\menus\\*{.ts,.js}`).replace(/\\/g,'/'));
+        // console.log({ commandFiles });
+        menuFiles.forEach(async file => {
+            const menu: Menu = await this.importFile(file);
+            if (!menu.name) return;
+
+            this.menus.set(menu.name, menu);
         })
         
         

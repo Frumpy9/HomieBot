@@ -2,6 +2,7 @@ require("dotenv").config()
 import { ExtendedClient } from "./structs/Client";
 import { Spotify } from "./structs/Spotify";
 import express from "express";
+import { Collection } from "discord.js";
 
 
 export const client = new ExtendedClient();
