@@ -6,7 +6,7 @@ import { ExtendedClient } from "./Client";
 type Interactions = ButtonInteraction | SelectMenuInteraction | ModalSubmitInteraction
 type RenderFunction = (menu: MenuInstance,props: any)=>Promise<RawMessagePayloadData> | RawMessagePayloadData;
 type RebuildFunction = (interaction: InteractionData, id: componentId)=> any;
-type ComponentCallback = (interaction: InteractionData) => void;
+type ComponentCallback = (interaction: InteractionData) => void | Promise<any>;
 
 export interface componentId{
     menuId: string,
@@ -50,7 +50,7 @@ export class Menu {
 
     async handleInteraction(interaction: InteractionData, componentId: componentId){
         const {instanceId} = componentId
-        if (!this.instances.has(instanceId)) await this.rehydrate(interaction, componentId);
+        if (!this.instances.has(instanceId)) return await this.rehydrate(interaction, componentId);
         return this.instances.get(instanceId)?.handleInteraction(interaction, componentId);
     }
 }
@@ -63,6 +63,7 @@ export class MenuInstance{
     private initialized = false;
     private stateIndex = -1;
     private prefix;
+    private stateIsDirty = false;
 
     public constructor(menu: string, id: string, render: RenderFunction, props: any){
         this.props = props;
@@ -82,9 +83,15 @@ export class MenuInstance{
         if (!this.initialized) this.state.push(initialState);
         this.stateIndex += 1;
 
+        //this is awful but I blame this shit language
+        const index = JSON.parse(JSON.stringify(this.stateIndex))
+
         return [
             this.state[this.stateIndex],
-            (s: any)=>this.state[this.stateIndex.valueOf()] = s
+            (s: any)=>{
+                this.stateIsDirty = true;
+                this.state[index] = s
+            }
         ]
     }
 
@@ -93,13 +100,11 @@ export class MenuInstance{
         return builder.setCustomId(`${this.prefix}#${id}`) as MessageActionRowComponentBuilder;
     }
 
-    public async handleInteraction(i: InteractionData, id: componentId){
-        const component = id.componentId;
-        const callback = this.callbacks.get(component);
-        const prevState = [...this.state];
-        await callback(i);
+    public async reRender(i: InteractionData){
+        console.log('re-rendering');
         
-        if (JSON.stringify(prevState) !== JSON.stringify(this.state) ){
+        if (this.stateIsDirty){
+            this.stateIsDirty = false;
             this.callbacks.clear();
             this.stateIndex = -1;
             const updated = await this.render(this, this.props) as MessagePayload
@@ -111,5 +116,16 @@ export class MenuInstance{
                 i.interaction.update(updated);
             }
         }
+    }
+
+    public async handleInteraction(i: InteractionData, id: componentId){
+        const component = id.componentId;
+        const callback = this.callbacks.get(component);
+        const value = callback(i);
+        if (!!value && typeof value.then === 'function') {
+            (value as Promise<any>).finally(()=>{this.reRender(i)});
+        }
+
+        await this.reRender(i);
     }
 }

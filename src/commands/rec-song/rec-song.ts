@@ -4,6 +4,7 @@ import { getAverageColor } from "fast-average-color-node";
 import { ActionRowBuilder, AnyComponentBuilder, APIActionRowComponent, APIMessageActionRowComponent, ButtonBuilder, ButtonComponent, ButtonStyle, ColorResolvable, ComponentBuilder, ComponentType, EmbedBuilder, ForumChannel, GuildMember, MessageActionRowComponentBuilder, RESTOAuth2AdvancedBotAuthorizationQueryResult, ThreadAutoArchiveDuration } from "discord.js";
 import ArtistButton from "../../components/buttons/artist";
 import addToPlaylist from "../../components/buttons/addToPlaylist";
+import song from "../../menus/song";
 
 export default new Command()
     .setName("rec-song")
@@ -23,6 +24,10 @@ export default new Command()
             async (err) => (await interaction.reply({ content: "Couldn't find song!", ephemeral: true }))
         ) as SpotifyApi.SingleTrackResponse;
 
+        const playlists = await spotify.getMe()
+        .then((d) => spotify.getUserPlaylists(d.body.id))
+        .then(d => d.body);
+
         if (!songData) return;
 
         const color = await getAverageColor(songData.album.images[2].url);
@@ -40,54 +45,11 @@ export default new Command()
                 reason: "Song recommended through HomieBot by: " + interaction.member.displayName
             })
             .then(async (t) => {
-                const artistButton = await ArtistButton.render([songData.artists[0].id]);
-                const playlistButton = await addToPlaylist.render([songData.artists[0].id, songData.id])
-                const embed = createSongEmbed(songData, interaction.member).setColor(color.hex as ColorResolvable);
-                t.send({ 
-                    content: '',
-                    embeds: [embed],
-                    components: [new ActionRowBuilder<MessageActionRowComponentBuilder>().setComponents([artistButton, playlistButton])]
-                });
+                const songMenu = song.new(songData.id, songData);
+                t.send(await songMenu.send());
                 return t.id;
             })
             .catch(console.error);
 
         await interaction.reply({ content: "Created song recommendation: <#" + threadID + ">", ephemeral: true });
     });
-
-const createSongEmbed = (data: SpotifyApi.SingleTrackResponse, member: GuildMember) => {
-    const { album, name, external_urls, artists, duration_ms } = data;
-
-    const millisToMinutesAndSeconds = (millis: number) => {
-        var minutes = Math.floor(millis / 60000);
-        var seconds = ((millis % 60000) / 1000).toFixed(0);
-        return +seconds == 60 ? minutes + 1 + ":00" : minutes + ":" + (+seconds < 10 ? "0" : "") + seconds;
-    }
-
-    const embed = new EmbedBuilder()
-        .setAuthor({ name: member.displayName, iconURL: member.displayAvatarURL() })
-        .setTitle(name + " by " + artists[0].name)
-        .setURL(external_urls.spotify)
-        .setThumbnail(album.images[2].url)
-        .addFields([
-            {
-                name: "Artists",
-                value: artists.map((artist) => "[" + artist.name + "](" + artist.external_urls.spotify + ")").join("\n"),
-                inline: true
-            },
-            {
-                name: "Album",
-                value: "[" + album.name + "](" + album.external_urls.spotify + ")",
-                inline: true
-            },
-            {
-                name: "Duration",
-                value: millisToMinutesAndSeconds(duration_ms),
-                inline: false
-            }
-        ])
-        .setFooter({ text: "Released" })
-        .setTimestamp(new Date(album.release_date));
-
-    return embed;
-};
