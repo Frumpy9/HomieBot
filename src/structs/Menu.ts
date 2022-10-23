@@ -113,7 +113,7 @@ export class MenuInstance{
                 await i.interaction.message?.edit(updated);
             }else {
                 if (i.interaction.type == InteractionType.ModalSubmit) return;
-                i.interaction.update(updated);
+                await i.interaction.update(updated);
             }
         }
     }
