@@ -95,13 +95,18 @@ export class MenuInstance{
         ]
     }
 
+    public addModal(id: string, builder: ModalBuilder, callback: ComponentCallback){
+        this.callbacks.set(id, callback);
+        return builder.setCustomId(`${this.prefix}#${id}`);
+    }
+
     public addComponent(id: string, builder: ButtonBuilder | SelectMenuBuilder | ModalBuilder, callback: ComponentCallback){
         this.callbacks.set(id, callback);
         return builder.setCustomId(`${this.prefix}#${id}`) as MessageActionRowComponentBuilder;
     }
 
     public async reRender(i: InteractionData){
-        console.log('re-rendering');
+        //console.log('re-rendering');
         
         if (this.stateIsDirty){
             this.stateIsDirty = false;
