@@ -46,14 +46,18 @@ export default new Menu(
 		const onBack = (i: InteractionData) =>
 			setPlaylistIndex(Math.max(playlistIndex - 1, 0));
 		const onCancel = (i: InteractionData) => setPage(0);
-		const onAdd = async (i: InteractionData) =>{
-            await spotify.addTracksToPlaylist(playlists[playlistIndex].id, [song.uri]);
-            await i.interaction.reply({
-				content: `${i.interaction.member?.toString()} added this song to ${playlists[playlistIndex].name}!`,
+		const onAdd = async (i: InteractionData) => {
+			await spotify.addTracksToPlaylist(playlists[playlistIndex].id, [
+				song.uri,
+			]);
+			await i.interaction.reply({
+				content: `${i.interaction.member?.toString()} added this song to ${
+					playlists[playlistIndex].name
+				}!`,
 			});
 
-            return onPlaylists(i);
-        }
+			return onPlaylists(i);
+		};
 		const onCreate = async (i: InteractionData) => {
 			if (!i.interaction.isMessageComponent()) return;
 			await i.interaction.showModal(
@@ -76,7 +80,7 @@ export default new Menu(
 				content: `${interaction.member?.toString()} created a new playlist named ${title}!`,
 			});
 
-            return onPlaylists(i).then(setPlaylistIndex(0));
+			return onPlaylists(i).then(setPlaylistIndex(0));
 		};
 		const onDropdown = (i: InteractionData) => setDropdown(!dropdown);
 		const onSelect = (i: InteractionData) => {
